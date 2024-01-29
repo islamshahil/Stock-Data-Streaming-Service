@@ -38,4 +38,4 @@ def kafka_consumer():
 
 if __name__ == '__main__':
     socketio.start_background_task(target=kafka_consumer)
-    socketio.run(app, host='0.0.0.0', port=5001, debug=False, use_reloader=False)
+    socketio.run(app, host='0.0.0.0', port=5001, debug=False, use_reloader=False, allow_unsafe_werkzeug=True)
