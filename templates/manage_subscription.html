@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Subscription</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .live-updates {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Subscribed Data Portal, {{ username }}!</h1>
+
+    <div class="live-updates">
+        <h2>Live Updates</h2>
+        <ul id="live-updates-list" class="stock-list"></ul>
+    </div>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + '5001');
+        socket.on('connect', function() {
+            console.log('Connected to SocketIO server');
+        });
+        var displayedStocks = [];
+        socket.on('stock_data', function(stock_data) {
+            var stockName = stock_data.name;
+            if (displayedStocks.includes(stockName)) {
+                var priceElement = document.getElementById('price-' + stockName);
+                priceElement.textContent = '$' + stock_data.price;
+            } else {
+                var listItem = document.createElement('li');
+                listItem.innerHTML = `<span id="name-${stockName}">${stockName}</span>: $<span id="price-${stockName}">${stock_data.price}</span>`;
+                document.getElementById('live-updates-list').appendChild(listItem);
+                displayedStocks.push(stockName);
+            }
+        });
+    </script>
+</body>
+</html>

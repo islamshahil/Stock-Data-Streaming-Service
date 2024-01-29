@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        #loader {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="button" onclick="login()">Login</button>
+        <div id="loader">Logging in...</div>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Show loader
+            document.getElementById("loader").style.display = "block";
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = `<p>${data.status || data.error}</p>`;
+                if (data.status === 'Login successful') {
+                    // Redirect after a short delay to show the loader
+                    setTimeout(function() {
+                        window.location.href = '/manage_subscription/' + username;
+                    }, 1000);
+                } else {
+                    // Hide loader on error
+                    document.getElementById("loader").style.display = "none";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("result").innerHTML = '<p>Error occurred. Please try again.</p>';
+                // Hide loader on error
+                document.getElementById("loader").style.display = "none";
+            });
+        }
+    </script>
+</body>
+</html>
